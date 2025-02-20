@@ -1,4 +1,13 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 export default function ClientPage() {
+  const router = useRouter();
+  const handleButtonClick = () => {
+    router.push("/order");
+  };
+
   return (
     <div className="flex flex-col justify-center items-center h-screen">
       <div className="text-4xl font-bold">Grids & Circles</div>
@@ -61,6 +70,7 @@ export default function ClientPage() {
           {/* 주문 조회 버튼 */}
           <div className="mt-10">
             <button
+              onClick={handleButtonClick}
               type="button"
               className="w-full py-4 bg-custom-gray rounded-md hover:bg-custom-red-600"
             >
