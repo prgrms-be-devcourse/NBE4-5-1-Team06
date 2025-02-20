@@ -32,13 +32,13 @@ public class Order {
 
 	private String email;
 
-	private LocalDateTime orderTime;  // 주문 시간
+	private LocalDateTime orderTime;  // 주문 일시
 
-	private LocalDateTime modifyTime; // 수정 시간
+	private LocalDateTime modifyTime; // 수정 일시
 
-	private boolean status; // 배송 상태 (true: 배송 완료, false: 배송 전)
+	private boolean status; // 출고 여부 (true: 출고 완료, false: 출고 전)
 
-	private String address;
+	private String address; // 주소
 
 	private int totalPrice; // 총 가격
 
