@@ -29,4 +29,8 @@ public class CoffeeService {
 
 		return CoffeeResponseDto.from(coffee);
 	}
+
+	public long count() {
+		return coffeeRepository.count();
+	}
 }

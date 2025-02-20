@@ -26,7 +26,7 @@ public class OrderService {
 	private final OrderCoffeeRepository orderCoffeeRepository;
 
 	@Transactional
-	public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) {
+	public OrderResponseDto create(OrderRequestDto orderRequestDto) {
 		Order order = Order.builder()
 			.email(orderRequestDto.getEmail())
 			.address(orderRequestDto.getAddress())
