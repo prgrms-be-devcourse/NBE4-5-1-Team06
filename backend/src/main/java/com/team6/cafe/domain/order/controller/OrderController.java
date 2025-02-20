@@ -21,7 +21,7 @@ public class OrderController {
 
 	private final OrderService orderService;
 
-	@Operation(summary = "Order 생성")
+	@Operation(summary = "주문 생성")
 	@PostMapping("/create")
 	public ResponseEntity<OrderResponseDto> create(@RequestBody @Valid OrderRequestDto request) {
 		OrderResponseDto response = orderService.create(request);

@@ -1,9 +1,7 @@
 package com.team6.cafe.domain.orderCoffee.dto;
 
 import jakarta.validation.constraints.NotNull;
-
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter

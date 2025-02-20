@@ -13,4 +13,12 @@ public class OrderCoffeeResponseDto {
 	private Long id;
 	private CoffeeResponseDto coffee; // 커피 정보 포함
 	private int quantity;
+
+	public static OrderCoffeeResponseDto from(OrderCoffee orderCoffee) {
+		return new OrderCoffeeResponseDto(
+			orderCoffee.getId(),
+			CoffeeResponseDto.from(orderCoffee.getCoffee()),
+			orderCoffee.getQuantity()
+		);
+	}
 }
