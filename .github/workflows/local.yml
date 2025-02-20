@@ -43,4 +43,5 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Build and Test
-        run: ./backend/gradlew build -s
+        working-directory: ./backend
+        run: ./gradlew build -s
