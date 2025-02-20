@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,5 +36,12 @@ public class OrderCoffee {
 	private Coffee coffee;
 
 	private int quantity; // 커피 수량
+
+	@Builder
+	public OrderCoffee(Order order, Coffee coffee, int quantity) {
+		this.order = order;
+		this.coffee = coffee;
+		this.quantity = quantity;
+	}
 }
 
