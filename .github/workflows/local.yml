@@ -25,7 +25,6 @@ jobs:
           collation server: "utf8mb4_general_ci"
           mysql version: "9.0"
           mysql database: "team6"
-          mysql root password: 1234
 
       - name: Wait for MySQL
         run: |
