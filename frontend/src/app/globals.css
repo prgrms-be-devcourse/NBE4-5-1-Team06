@@ -15,7 +15,22 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 100vw;
+  height: 80vh;
+  border: 1px solid #b79999;
+  border-radius: 20px;
+}
+
+.container-coffee {
+  width: 50vw;
+  height: 12vh;
+  border: 2px solid #c2c2c2a4;
+  border-radius: 10px;
 }
