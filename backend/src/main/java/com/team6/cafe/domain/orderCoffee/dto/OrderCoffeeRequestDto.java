@@ -17,4 +17,9 @@ public class OrderCoffeeRequestDto {
 
 	@Min(1)
 	private int quantity; // 최소수량 1개
+
+	public OrderCoffeeRequestDto(Long coffeeId, int quantity) {
+		this.coffeeId = coffeeId;
+		this.quantity = quantity;
+	}
 }
