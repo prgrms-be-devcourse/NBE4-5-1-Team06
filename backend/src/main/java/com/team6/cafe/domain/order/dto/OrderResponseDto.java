@@ -2,9 +2,11 @@ package com.team6.cafe.domain.order.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.team6.cafe.domain.order.entity.Order;
 import com.team6.cafe.domain.orderCoffee.dto.OrderCoffeeResponseDto;
+import com.team6.cafe.domain.orderCoffee.entity.OrderCoffee;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +27,20 @@ public class OrderResponseDto {
 	private int totalPrice;
 	private List<OrderCoffeeResponseDto> orderCoffees;
 
-	public static OrderResponseDto from(Order order) {
-		return new OrderResponseDto(); // 미구현
+	public static OrderResponseDto from(Order order, List<OrderCoffee> orderCoffees) {
+		List<OrderCoffeeResponseDto> orderCoffeeDtos = orderCoffees.stream()
+			.map(OrderCoffeeResponseDto::from)
+			.collect(Collectors.toList());
+
+		return new OrderResponseDto(
+			order.getId(),
+			order.getEmail(),
+			order.getOrderTime(),
+			order.getModifyTime(),
+			order.isStatus(),
+			order.getAddress(),
+			order.getTotalPrice(),
+			orderCoffeeDtos
+		);
 	}
 }

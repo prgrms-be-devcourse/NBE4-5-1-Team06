@@ -1,9 +1,7 @@
 package com.team6.cafe.domain.orderCoffee.dto;
 
 import jakarta.validation.constraints.NotNull;
-
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -19,4 +17,9 @@ public class OrderCoffeeRequestDto {
 
 	@Min(1)
 	private int quantity; // 최소수량 1개
+
+	public OrderCoffeeRequestDto(Long coffeeId, int quantity) {
+		this.coffeeId = coffeeId;
+		this.quantity = quantity;
+	}
 }
