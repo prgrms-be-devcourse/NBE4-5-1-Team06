@@ -36,7 +36,7 @@ export default function ClientPage() {
       console.log(response.data);
       setOrders(response.data.orders); // ✅ orders 배열만 저장
     } catch (error) {
-      alert("조회 에러");
+      alert("해당 이메일의 주문은 존재하지 않습니다.");
     }
   };
 
@@ -94,6 +94,8 @@ export default function ClientPage() {
   const toggleEditing = (orderId: number) => {
     if (editingOrder === orderId) {
       setEditingOrder(null); // 수정 중인 주문을 다시 완료 상태로 변경
+      // 수정 완료 시 서버에 업데이트 요청
+      updateOrder(orderId); // 업데이트 API 호출
     } else {
       setEditingOrder(orderId); // 해당 주문을 수정 모드로 변경
     }
@@ -106,6 +108,47 @@ export default function ClientPage() {
         total + coffeeOrder.coffee.price * coffeeOrder.quantity,
       0
     );
+  };
+
+  // 서버에 PATCH 요청 보내기
+  const updateOrder = async (orderId: number) => {
+    try {
+      const orderToUpdate = orders.find((order) => order.id === orderId);
+      if (!orderToUpdate) return;
+
+      const updatedOrderData = {
+        ...orderToUpdate,
+        totalPrice: calculateTotalPrice(orderToUpdate), // 총 가격 다시 계산
+      };
+
+      // 서버에 PATCH 요청
+      const response = await axios.patch(
+        `/api/order/${orderId}`,
+        updatedOrderData
+      );
+      console.log("Updated order:", response.data);
+
+      // 상태 업데이트
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.id === orderId ? { ...order, ...updatedOrderData } : order
+        )
+      );
+    } catch (error) {
+      alert("수정 실패");
+    }
+  };
+
+  const handleDelete = async (orderId: number) => {
+    if (window.confirm("정말 이 주문을 삭제하시겠습니까?")) {
+      try {
+        await axios.delete(`/api/order/${orderId}`);
+        setOrders(orders.filter((order) => order.id !== orderId)); // 삭제 후 로컬 상태 업데이트
+        alert("주문이 삭제되었습니다.");
+      } catch (error) {
+        alert("삭제 중 오류가 발생했습니다.");
+      }
+    }
   };
 
   return (
@@ -137,7 +180,7 @@ export default function ClientPage() {
             >
               <div>{order.id}</div>
               <div className="flex flex-col m-4 justify-between items-center">
-                <div>📍 {order.address}</div>
+                <div>{order.address}</div>
                 <div>{new Date(order.orderTime).toLocaleString()}</div>
               </div>
               <ul className="ml-4">
@@ -189,7 +232,10 @@ export default function ClientPage() {
                 >
                   {editingOrder === order.id ? "완료" : "수정"}
                 </button>
-                <button className="bg-red-400 text-white px-2 py-1 rounded-md">
+                <button
+                  onClick={() => handleDelete(order.id)}
+                  className="bg-red-400 text-white px-2 py-1 rounded-md"
+                >
                   삭제
                 </button>
               </div>
