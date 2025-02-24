@@ -26,6 +26,11 @@ body {
   height: 80vh;
   border: 1px solid #b79999;
   border-radius: 20px;
+  overflow-y: auto;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
 }
 
 .container-coffee {
