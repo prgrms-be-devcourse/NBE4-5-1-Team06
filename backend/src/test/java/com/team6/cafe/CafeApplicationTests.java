@@ -8,14 +8,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.team6.cafe.domain.coffee.dto.CoffeeRequestDto;
+import com.team6.cafe.domain.coffee.service.CoffeeService;
 import com.team6.cafe.domain.order.dto.OrderRequestDto;
 import com.team6.cafe.domain.order.dto.OrderResponseDto;
 import com.team6.cafe.domain.order.dto.OrderUpdateRequestDto;
@@ -24,6 +28,7 @@ import com.team6.cafe.domain.order.service.OrderService;
 import com.team6.cafe.domain.orderCoffee.dto.OrderCoffeeRequestDto;
 import com.team6.cafe.domain.orderCoffee.dto.OrderCoffeeResponseDto;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc
 class CafeApplicationTests {
@@ -31,10 +36,21 @@ class CafeApplicationTests {
 	private OrderService orderService;
 
 	@Autowired
+	private CoffeeService coffeeService;
+
+	@Autowired
 	private MockMvc mvc;
 
-	@Test
-	void contextLoads() {
+	@BeforeEach
+	public void setup() {
+		coffeeService.create(new CoffeeRequestDto("Columbia Nariño", 5000,
+			"https://cdn.pixabay.com/photo/2017/09/04/18/39/coffee-2714970_960_720.jpg"));
+		coffeeService.create(new CoffeeRequestDto("Brazil Serra do Caparaó", 6000,
+			"https://cdn.pixabay.com/photo/2016/01/02/04/59/coffee-1117933_1280.jpg"));
+		coffeeService.create(new CoffeeRequestDto("Columbia Quindio(White Wine Extended Fermentation)", 7000,
+			"https://cdn.pixabay.com/photo/2022/11/01/05/18/coffee-7561288_1280.jpg"));
+		coffeeService.create(new CoffeeRequestDto("Ethiopia Sidamo", 8000,
+			"https://cdn.pixabay.com/photo/2015/05/31/10/54/coffee-791045_1280.jpg"));
 	}
 
 	private void initData() {
