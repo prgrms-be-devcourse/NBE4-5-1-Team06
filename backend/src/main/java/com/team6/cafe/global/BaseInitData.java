@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 
 import com.team6.cafe.domain.coffee.dto.CoffeeRequestDto;
 import com.team6.cafe.domain.coffee.service.CoffeeService;

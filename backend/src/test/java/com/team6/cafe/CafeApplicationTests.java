@@ -10,21 +10,27 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.team6.cafe.domain.order.dto.OrderRequestDto;
 import com.team6.cafe.domain.order.dto.OrderResponseDto;
 import com.team6.cafe.domain.order.dto.OrderUpdateRequestDto;
 import com.team6.cafe.domain.order.dto.OrderUpdateRequestDto.CoffeeDto;
+import com.team6.cafe.domain.order.repository.OrderRepository;
 import com.team6.cafe.domain.order.service.OrderService;
 import com.team6.cafe.domain.orderCoffee.dto.OrderCoffeeRequestDto;
 import com.team6.cafe.domain.orderCoffee.dto.OrderCoffeeResponseDto;
+import com.team6.cafe.global.BaseInitData;
 
-@SpringBootTest
+@ActiveProfiles("test")
+@SpringBootTest(classes = CafeApplication.class)
 @AutoConfigureMockMvc
 class CafeApplicationTests {
 	@Autowired
@@ -32,6 +38,9 @@ class CafeApplicationTests {
 
 	@Autowired
 	private MockMvc mvc;
+
+	@Autowired
+	private OrderRepository orderRepository;
 
 	@Test
 	void contextLoads() {
@@ -94,7 +103,7 @@ class CafeApplicationTests {
 
 		/* Given */
 		String email = "test@gmail.com";
-		Long orderId = 1L;
+		Long orderId = 4L;
 		Long coffeeId1 = 1L;
 		Long coffeeId2 = 2L;
 
@@ -105,6 +114,8 @@ class CafeApplicationTests {
 				new CoffeeDto(coffeeId2, 6)
 			)
 		);
+
+		System.out.println("이메일은 : "+orderRepository.findById(orderId).get().getEmail());
 
 		/* When */
 		OrderResponseDto response = orderService.update(orderId, request);

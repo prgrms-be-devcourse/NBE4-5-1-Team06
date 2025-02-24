@@ -70,6 +70,5 @@ public class Order {
 
 	public void updateStatusToShipped() {
 		this.status = true;
-		this.modifyTime = LocalDateTime.now();  // 수정 시간 갱신
 	}
 }
