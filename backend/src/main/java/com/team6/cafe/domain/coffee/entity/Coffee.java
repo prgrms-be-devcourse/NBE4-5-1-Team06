@@ -38,9 +38,7 @@ public class Coffee {
 		this.image = image;
 	}
 
-	public void update(String name, int price, String image) {
-		this.name = name;
+	public void update(int price) {
 		this.price = price;
-		this.image = image;
 	}
 }

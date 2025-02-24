@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.team6.cafe.domain.coffee.dto.CoffeeRequestDto;
 import com.team6.cafe.domain.coffee.dto.CoffeeResponseDto;
+import com.team6.cafe.domain.coffee.dto.CoffeeUpdateRequestDto;
 import com.team6.cafe.domain.coffee.service.CoffeeService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,14 +36,16 @@ public class CoffeeController {
 		return ResponseEntity.ok(response);
 	}
 
-	@Operation(summary = "커피 수정")
+	@Operation(summary = "커피 가격 수정")
 	@PatchMapping("/{id}")
 	public ResponseEntity<CoffeeResponseDto> modifyCoffee(
 		@PathVariable Long id,
-		@RequestBody @Valid CoffeeRequestDto request) {
+		@RequestBody @Valid CoffeeUpdateRequestDto request) {
+
 		CoffeeResponseDto updatedCoffee = coffeeService.updateCoffee(id, request);
 		return ResponseEntity.ok(updatedCoffee);
 	}
+
 
 	@Operation(summary = "커피 삭제")
 	@DeleteMapping("/{id}")
@@ -52,7 +55,7 @@ public class CoffeeController {
 	}
 
 	@Operation(summary = "커피 전체 조회")
-	@GetMapping("")
+	@GetMapping
 	public ResponseEntity<List<CoffeeResponseDto>> getCoffees() {
 		return ResponseEntity.ok(coffeeService.getAllCoffees());
 	}

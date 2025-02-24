@@ -3,13 +3,18 @@ package com.team6.cafe.domain.coffee.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.team6.cafe.domain.coffee.dto.CoffeeRequestDto;
 import com.team6.cafe.domain.coffee.dto.CoffeeResponseDto;
+import com.team6.cafe.domain.coffee.dto.CoffeeUpdateRequestDto;
 import com.team6.cafe.domain.coffee.entity.Coffee;
 import com.team6.cafe.domain.coffee.repository.CoffeeRepository;
+import com.team6.cafe.global.common.exception.BusinessException;
+import com.team6.cafe.global.common.response.ErrorCode;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +34,6 @@ public class CoffeeService {
 			.collect(Collectors.toList());
 	}
 
-	// 특정 커피 조회
-	@Transactional(readOnly = true)
-	public CoffeeResponseDto getCoffeeById(Long id) {
-		Coffee coffee = coffeeRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("해당 커피가 존재하지 않습니다. ID: " + id));
-		return CoffeeResponseDto.from(coffee);
-	}
-
 	// 커피 생성
 	@Transactional
 	public CoffeeResponseDto create(@Valid CoffeeRequestDto request) {
@@ -53,11 +50,14 @@ public class CoffeeService {
 
 	// 커피 수정
 	@Transactional
-	public CoffeeResponseDto updateCoffee(Long id, CoffeeRequestDto requestDto) {
+	public CoffeeResponseDto updateCoffee(Long id, CoffeeUpdateRequestDto requestDto) {
 		Coffee coffee = coffeeRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("해당 커피가 존재하지 않습니다. ID: " + id));
+			.orElseThrow(() -> new BusinessException(ErrorCode.COFFEE_NOT_FOUND));
 
-		coffee.update(requestDto.getName(), requestDto.getPrice(), requestDto.getImage());
+		if (requestDto.getPrice() != null) {
+			coffee.update(requestDto.getPrice());
+		}
+
 		return CoffeeResponseDto.from(coffee);
 	}
 
@@ -65,7 +65,7 @@ public class CoffeeService {
 	@Transactional
 	public void deleteCoffee(Long id) {
 		Coffee coffee = coffeeRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("해당 커피가 존재하지 않습니다. ID: " + id));
+			.orElseThrow(() -> new BusinessException(ErrorCode.COFFEE_NOT_FOUND));
 
 		coffeeRepository.delete(coffee);
 	}

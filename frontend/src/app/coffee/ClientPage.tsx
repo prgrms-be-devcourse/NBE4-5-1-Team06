@@ -38,11 +38,7 @@ export default function ClientPage() {
   const updateCoffee = async (coffeeId: number) => {
     if (window.confirm("정말 커피를 수정하시겠습니까?")) {
       try {
-        const coffeeToUpdate = coffees.find((coffee) => coffee.id === coffeeId);
-        if (!coffeeToUpdate) return;
-
         const updatedCoffeeData = {
-          ...coffeeToUpdate,
           price: modifyPrice,
         };
 
@@ -183,19 +179,19 @@ export default function ClientPage() {
                 </div>
                 <div className="flex flex-col">
                   <button
-                    className="bg-blue-400 text-white px-2 py-1 rounded-md mb-2"
+                    className="bg-blue-400 text-white text-sm px-2 py-1 rounded-md mb-2"
                     onClick={() => {
                       toggleEditing(coffee.id);
                       setPrice(coffee.price.toString()); // 가격 상태 업데이트
                     }}
                   >
-                    {editingCoffee === coffee.id ? "완료" : "수정"}
+                    {editingCoffee === coffee.id ? "Check" : "Edit"}
                   </button>
                   <button
                     onClick={() => handleDelete(coffee.id)}
-                    className="bg-red-400 text-white px-2 py-1 rounded-md"
+                    className="bg-red-400 text-white text-sm px-2 py-1 rounded-md"
                   >
-                    삭제
+                    Delete
                   </button>
                 </div>
               </li>
