@@ -119,9 +119,11 @@ public class OrderService {
 		Order order = orderRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
-		order.deleteOrder();
-		orderRepository.save(order);
+		orderRepository.delete(order);
 
-		return OrderResponseDto.from(order, order.getOrderCoffees());
+		OrderResponseDto responseDto = OrderResponseDto.from(order, order.getOrderCoffees());
+		responseDto.setDeleted(true);
+
+		return responseDto;
 	}
 }
