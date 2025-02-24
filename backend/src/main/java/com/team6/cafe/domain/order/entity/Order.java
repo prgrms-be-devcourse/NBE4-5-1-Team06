@@ -55,4 +55,16 @@ public class Order {
 		this.totalPrice = totalPrice;
 		this.orderCoffees = new ArrayList<>();
 	}
+
+	public boolean isMyOrder(String email) {
+		return this.email.equals(email);
+	}
+
+	public void updateTotalPrice() {
+		totalPrice = orderCoffees.stream()
+			.mapToInt(orderCoffee -> orderCoffee.getQuantity() * orderCoffee.getCoffee().getPrice())
+			.sum();
+
+		modifyTime = LocalDateTime.now();
+	}
 }
