@@ -126,4 +126,16 @@ class CafeApplicationTests {
 			.collect(Collectors.toList());
 		assertThat(quantities).containsExactlyInAnyOrder(5, 6, 3);
 	}
+
+	@Test
+	@DisplayName("주문 삭제 테스트")
+	void deleteTest() throws Exception {
+		initData();
+		Long orderId = 1L;
+
+		mvc.perform(delete("/api/order/{id}", orderId))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id").value(orderId))
+			.andExpect(jsonPath("$.deleted").value(true));
+	}
 }
