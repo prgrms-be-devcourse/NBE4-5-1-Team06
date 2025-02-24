@@ -9,6 +9,7 @@ public enum ErrorCode {
 
 	BAD_REQUEST(ErrorConstant.BAD_REQUEST, "GLOBAL-400", "잘못된 요청입니다."),
 	INTERNAL_SERVER(ErrorConstant.INTERNAL_SERVER_ERROR, "GLOBAL-500", "서버 내부 오류입니다."),
+	UNAUTHORIZED(ErrorConstant.FORBIDDEN, "GLOBAL-403", "접근 권한이 없습니다."),
 
 	// ---- 주문 ---- //
 	ORDER_NOT_FOUND(ErrorConstant.NOT_FOUND, "ORDER-001", "존재하지 않는 주문입니다.");
