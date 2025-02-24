@@ -2,8 +2,11 @@ package com.team6.cafe.domain.order.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,10 +14,14 @@ import com.team6.cafe.domain.coffee.entity.Coffee;
 import com.team6.cafe.domain.coffee.repository.CoffeeRepository;
 import com.team6.cafe.domain.order.dto.OrderRequestDto;
 import com.team6.cafe.domain.order.dto.OrderResponseDto;
+import com.team6.cafe.domain.order.dto.OrderUpdateRequestDto;
+import com.team6.cafe.domain.order.dto.OrderUpdateRequestDto.CoffeeDto;
 import com.team6.cafe.domain.order.entity.Order;
 import com.team6.cafe.domain.order.repository.OrderRepository;
 import com.team6.cafe.domain.orderCoffee.entity.OrderCoffee;
 import com.team6.cafe.domain.orderCoffee.repository.OrderCoffeeRepository;
+import com.team6.cafe.global.common.exception.BusinessException;
+import com.team6.cafe.global.common.response.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -54,5 +61,56 @@ public class OrderService {
 		orderCoffeeRepository.saveAll(orderCoffees);
 
 		return OrderResponseDto.from(savedOrder, orderCoffees);
+	}
+
+	@Transactional
+	public OrderResponseDto update(Long orderId, OrderUpdateRequestDto request) {
+		String email = request.email();
+
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+		if (!order.isMyOrder(email)) {
+			throw new BusinessException(ErrorCode.UNAUTHORIZED);
+		}
+
+		Map<Pair<Long, Long>, OrderCoffee> orderCoffeeMap = getOrderCoffeeMap(order);
+
+		updateQuantities(orderCoffeeMap, orderId, request.coffees());
+		updatePrices(order);
+
+		return OrderResponseDto.from(order, order.getOrderCoffees());
+	}
+
+	private void updatePrices(Order order) {
+		order.updateTotalPrice();
+	}
+
+	private void updateQuantities(Map<Pair<Long, Long>, OrderCoffee> orderCoffeeMap, Long orderId,
+		List<CoffeeDto> coffees) {
+		coffees.forEach(
+			coffee -> {
+				Long coffeeId = coffee.coffeeId();
+				Integer newQuantity = coffee.quantity();
+
+				OrderCoffee orderCoffee = orderCoffeeMap.get(Pair.of(orderId, coffeeId));
+
+				if (orderCoffee != null) {
+					orderCoffee.updateQuantity(newQuantity);
+				}
+			}
+		);
+	}
+
+	@Transactional(readOnly = true)
+	Map<Pair<Long, Long>, OrderCoffee> getOrderCoffeeMap(Order order) {
+		return Stream.of(order)
+			.flatMap(o -> o.getOrderCoffees().stream()
+				.map(oc -> Pair.of(
+					Pair.of(o.getId(), oc.getCoffee().getId()),
+					oc)
+				)
+			)
+			.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 	}
 }
