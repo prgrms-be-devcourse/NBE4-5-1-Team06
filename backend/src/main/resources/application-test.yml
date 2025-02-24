@@ -1,0 +1,35 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  output:
+    ansi:
+      enabled: always
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 10
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:team6;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+    hikari:
+      auto-commit: false
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.transaction.interceptor: TRACE
