@@ -16,8 +16,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SoftDelete
@@ -37,11 +39,14 @@ public class OrderCoffee {
 
 	private int quantity; // 커피 수량
 
+	private boolean deleted; // 삭제 유무
+
 	@Builder
-	public OrderCoffee(Order order, Coffee coffee, int quantity) {
+	public OrderCoffee(Order order, Coffee coffee, int quantity, boolean deleted) {
 		this.order = order;
 		this.coffee = coffee;
 		this.quantity = quantity;
+		this.deleted = deleted;
 	}
 
 	public void updateQuantity(Integer quantity) {

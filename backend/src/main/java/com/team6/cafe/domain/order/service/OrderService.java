@@ -113,4 +113,15 @@ public class OrderService {
 			)
 			.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 	}
+
+	@Transactional
+	public OrderResponseDto delete(Long id) {
+		Order order = orderRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+		order.deleteOrder();
+		orderRepository.save(order);
+
+		return OrderResponseDto.from(order, order.getOrderCoffees());
+	}
 }

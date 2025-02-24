@@ -1,6 +1,7 @@
 package com.team6.cafe.domain.order.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,5 +39,11 @@ public class OrderController {
 		@RequestBody @Valid OrderUpdateRequestDto request
 	) {
 		return ResponseEntity.ok(orderService.update(id, request));
+	}
+
+	@Operation(summary = "주문 삭제")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<OrderResponseDto> delete(@PathVariable Long id) {
+		return ResponseEntity.ok(orderService.delete(id));
 	}
 }

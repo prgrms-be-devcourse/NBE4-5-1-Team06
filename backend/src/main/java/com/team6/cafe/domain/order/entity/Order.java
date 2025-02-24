@@ -19,8 +19,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SoftDelete
@@ -42,17 +44,20 @@ public class Order {
 
 	private int totalPrice; // 총 가격
 
+	private boolean deleted; // 삭제 유무
+
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderCoffee> orderCoffees; // 주문한 커피 목록
 
 	@Builder
-	public Order(String email, LocalDateTime orderTime, LocalDateTime modifyTime, boolean status, String address, int totalPrice) {
+	public Order(String email, LocalDateTime orderTime, LocalDateTime modifyTime, boolean status, String address, int totalPrice, boolean deleted) {
 		this.email = email;
 		this.orderTime = orderTime;
 		this.modifyTime = modifyTime;
 		this.status = status;
 		this.address = address;
 		this.totalPrice = totalPrice;
+		this.deleted = deleted;
 		this.orderCoffees = new ArrayList<>();
 	}
 
@@ -66,5 +71,13 @@ public class Order {
 			.sum();
 
 		modifyTime = LocalDateTime.now();
+	}
+
+	public void deleteOrder() {
+		this.deleted = true;
+
+		if (orderCoffees != null) {
+			orderCoffees.forEach(orderCoffee -> orderCoffee.setDeleted(true));
+		}
 	}
 }
