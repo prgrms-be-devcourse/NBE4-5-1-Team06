@@ -28,13 +28,13 @@ axios.defaults.baseURL =
 
 export default function ClientPage() {
   const [email, setEmail] = useState("");
-  const [orders, setOrders] = useState<Order[]>([]); // ✅ 타입 명시
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const getData = async () => {
     try {
       const response = await axios.get(`/api/order/${email}`);
       console.log(response.data);
-      setOrders(response.data.orders); // ✅ orders 배열만 저장
+      setOrders(response.data.orders);
     } catch (error) {
       alert("해당 이메일의 주문은 존재하지 않습니다.");
     }

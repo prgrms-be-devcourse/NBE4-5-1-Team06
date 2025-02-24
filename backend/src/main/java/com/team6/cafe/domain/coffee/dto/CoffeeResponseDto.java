@@ -12,8 +12,9 @@ public class CoffeeResponseDto {
 	private Long id; // 아이디
 	private String name; // 커피명
 	private int price; // 가격
+	private String image;
 
 	public static CoffeeResponseDto from(Coffee coffee) {
-		return new CoffeeResponseDto(coffee.getId(), coffee.getName(), coffee.getPrice());
+		return new CoffeeResponseDto(coffee.getId(), coffee.getName(), coffee.getPrice(), coffee.getImage());
 	}
 }

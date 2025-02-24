@@ -37,4 +37,8 @@ public class Coffee {
 		this.price = price;
 		this.image = image;
 	}
+
+	public void update(int price) {
+		this.price = price;
+	}
 }
