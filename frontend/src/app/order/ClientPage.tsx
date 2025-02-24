@@ -111,14 +111,19 @@ export default function ClientPage() {
   };
 
   // 서버에 PATCH 요청 보내기
-  const updateOrder = async (orderId: number) => {
+  const updateOrder = async (
+    orderId: number,
+    updatedEmail: string,
+    updatedCoffees: { coffeeId: number; quantity: number }[]
+  ) => {
     try {
       const orderToUpdate = orders.find((order) => order.id === orderId);
       if (!orderToUpdate) return;
 
+      // 요청 데이터 구성
       const updatedOrderData = {
-        ...orderToUpdate,
-        totalPrice: calculateTotalPrice(orderToUpdate), // 총 가격 다시 계산
+        email: updatedEmail,
+        coffees: updatedCoffees,
       };
 
       // 서버에 PATCH 요청
@@ -131,11 +136,18 @@ export default function ClientPage() {
       // 상태 업데이트
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order.id === orderId ? { ...order, ...updatedOrderData } : order
+          order.id === orderId
+            ? {
+                ...order,
+                email: updatedEmail,
+                orderCoffees: response.data.orderCoffees,
+              }
+            : order
         )
       );
     } catch (error) {
-      alert("수정 실패");
+      console.error("수정 실패:", error);
+      alert("주문 수정 실패");
     }
   };
 
