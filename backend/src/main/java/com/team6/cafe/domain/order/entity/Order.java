@@ -9,6 +9,7 @@ import org.hibernate.annotations.SoftDelete;
 import com.team6.cafe.domain.orderCoffee.entity.OrderCoffee;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,6 +45,7 @@ public class Order {
 
 	private int totalPrice; // 총 가격
 
+	@Column(insertable = false, updatable = false)
 	private boolean deleted; // 삭제 유무
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
