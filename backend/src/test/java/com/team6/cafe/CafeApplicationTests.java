@@ -39,9 +39,6 @@ class CafeApplicationTests {
 	@Autowired
 	private MockMvc mvc;
 
-	@Autowired
-	private OrderRepository orderRepository;
-
 	@Test
 	void contextLoads() {
 	}
@@ -114,8 +111,6 @@ class CafeApplicationTests {
 				new CoffeeDto(coffeeId2, 6)
 			)
 		);
-
-		System.out.println("이메일은 : "+orderRepository.findById(orderId).get().getEmail());
 
 		/* When */
 		OrderResponseDto response = orderService.update(orderId, request);
