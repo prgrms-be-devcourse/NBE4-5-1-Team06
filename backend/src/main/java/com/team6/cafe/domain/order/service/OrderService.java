@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.team6.cafe.domain.order.dto.OrderSearchResponseDto;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,5 +138,37 @@ public class OrderService {
 
 	public Long count() {
 		return orderCoffeeRepository.count();
+	}
+
+	@Transactional(readOnly = true)
+	public List<OrderSearchResponseDto> getOrdersByEmail(String email) {
+		List<Order> orders = orderRepository.findByEmailAndStatusFalse(email);
+
+		return orders.stream()
+				.map(order -> {
+					List<OrderSearchResponseDto.OrderCoffeeInfoDto> coffeeItems = order.getOrderCoffees().stream()
+							.map(orderCoffee -> OrderSearchResponseDto.OrderCoffeeInfoDto.builder()
+									.id(orderCoffee.getId())
+									.coffee(OrderSearchResponseDto.OrderCoffeeInfoDto.CoffeeInfoDto.builder()
+											.id(orderCoffee.getCoffee().getId())
+											.name(orderCoffee.getCoffee().getName())
+											.price(orderCoffee.getCoffee().getPrice())
+											.build())
+									.quantity(orderCoffee.getQuantity())
+									.build())
+							.toList();
+
+					return OrderSearchResponseDto.builder()
+							.id(order.getId())
+							.email(order.getEmail())
+							.orderTime(order.getOrderTime())
+							.modifyTime(order.getModifyTime())
+							.status(order.isStatus())
+							.address(order.getAddress())
+							.totalPrice(order.getTotalPrice())
+							.orderCoffees(coffeeItems)
+							.build();
+				})
+				.toList();
 	}
 }

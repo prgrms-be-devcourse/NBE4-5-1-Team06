@@ -6,6 +6,16 @@ spring:
   output:
     ansi:
       enabled: always
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+    static-path-pattern: /static/**  # 특수 문자(@,.)로 의한 이메일 정적리소스 처리되는 것을 막기 위한 정적 리소스 요청 패턴 명시.
+  spring:
+    http:
+      encoding:
+        charset: UTF-8
+        enabled: true
+        force: true
 
   jpa:
     hibernate:
