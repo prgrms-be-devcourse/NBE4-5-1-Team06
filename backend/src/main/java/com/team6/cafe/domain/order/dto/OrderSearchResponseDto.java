@@ -1,33 +1,36 @@
 package com.team6.cafe.domain.order.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Builder
-@AllArgsConstructor
 public class OrderSearchResponseDto {
-    private Long orderId;
-    private String customerEmail;
+    private Long id;
+    private String email;
     private LocalDateTime orderTime;
     private LocalDateTime modifyTime;
     private boolean status;
-    private String deliveryAddress;
+    private String address;
     private int totalPrice;
-    private List<OrderCoffeeInfoDto> coffeeItems;
+    private List<OrderCoffeeInfoDto> orderCoffees;
 
     @Getter
     @Builder
-    @AllArgsConstructor
     public static class OrderCoffeeInfoDto {
-        private Long orderCoffeeId;
-        private Long coffeeId;
-        private String coffeeName;
-        private int coffeePrice;
+        private Long id;
+        private CoffeeInfoDto coffee;
         private int quantity;
+
+        @Getter
+        @Builder
+        public static class CoffeeInfoDto {
+            private Long id;
+            private String name;
+            private int price;
+        }
     }
 }

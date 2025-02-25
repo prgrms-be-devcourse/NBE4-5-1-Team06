@@ -8,4 +8,5 @@ import com.team6.cafe.domain.order.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 	List<Order> findByStatusFalse();
+	List<Order> findByEmailAndStatusFalse(String email);
 }
