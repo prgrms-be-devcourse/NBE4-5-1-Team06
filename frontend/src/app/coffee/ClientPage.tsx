@@ -5,25 +5,41 @@ import { useRouter } from "next/navigation";
 
 axios.defaults.baseURL = "http://localhost:8080";
 
+interface Coffee {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+}
+
 export default function ClientPage() {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [coffees, setCoffees] = useState([]);
+  const [coffees, setCoffees] = useState<Coffee[]>([]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
   const [editingCoffee, setEditingCoffee] = useState<number | null>(null);
   const [modifyPrice, setModifyPrice] = useState("");
 
-  const getData = async () => {
-    try {
-      const response = await axios.get(`/api/coffee`);
-      console.log(response.data);
-      setCoffees(response.data);
-    } catch (error) {
-      alert("데이터를 불러오는데 실패했습니다.");
-    }
-  };
+  const api = axios.create({
+    baseURL: "http://localhost:8080/api",
+  });
+
+  useEffect(() => {
+    api
+      .get("/coffee") // baseURL이 자동으로 붙음
+      .then((response) => {
+        setCoffees(response.data);
+        const initialQuantities: { [key: number]: number } = {};
+        response.data.forEach((coffee: Coffee) => {
+          initialQuantities[coffee.id] = 0;
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching coffee data:", error);
+      });
+  }, []);
 
   const toggleEditing = (coffeeId: number) => {
     if (editingCoffee === coffeeId) {
@@ -101,11 +117,14 @@ export default function ClientPage() {
     }
   };
 
+  const formatPrice = (price: number) => {
+    return price.toLocaleString();
+  };
+
   useEffect(() => {
     const storedAuth = sessionStorage.getItem("isAuthenticated");
     if (storedAuth === "true") {
       setIsAuthenticated(true);
-      getData();
     }
   }, []);
 
@@ -152,51 +171,54 @@ export default function ClientPage() {
           <div>MENU</div>
 
           {/* 커피 종류 컨테이너 */}
-          <ul className="ml-4">
+          <div className="mt-5 flex flex-col space-y-4">
             {coffees.map((coffee, index) => (
-              <li
-                key={`${coffee.id}-${index}`} // id와 index를 결합하여 고유한 key를 생성
-                className="container-coffee flex flex-row max-w-full h-20 mt-4 items-center text-lg font-medium"
+              <div
+                key={`${coffee.id}-${index}`}
+                className="flex items-center justify-between p-4 border border-gray-300 rounded-lg shadow-sm"
               >
-                <img
-                  className="coffee_image ml-1 mr-2 rounded-md w-[15%] h-[95%]"
-                  src={coffee.image}
-                />
-                <div className="flex mr-2 w-[60%] justify-center">
-                  {coffee.name}
+                <div className="flex items-center w-full">
+                  <img
+                    src={coffee.image}
+                    alt={coffee.name}
+                    className="w-16 h-16 object-cover rounded-md"
+                  />
+                  <div className="flex flex-col ml-4">
+                    <span className="text-lg font-semibold">{coffee.name}</span>
+                    <span className="text-gray-600">
+                      {editingCoffee === coffee.id ? (
+                        <input
+                          type="number"
+                          value={modifyPrice}
+                          onChange={(e) => setModifyPrice(e.target.value)}
+                          className="w-[80%] px-4 py-2 border border-gray-300 rounded-md"
+                        />
+                      ) : (
+                        `${formatPrice(coffee.price)} ₩`
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex flex-col ml-auto">
+                    <button
+                      className="bg-blue-400 text-white text-sm px-2 py-1 rounded-md mb-2"
+                      onClick={() => {
+                        toggleEditing(coffee.id);
+                        setPrice(coffee.price.toString()); // 가격 상태 업데이트
+                      }}
+                    >
+                      {editingCoffee === coffee.id ? "Check" : "Edit"}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(coffee.id)}
+                      className="bg-red-400 text-white text-sm px-2 py-1 rounded-md"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="mr-2 w-[15%] ">
-                  {editingCoffee === coffee.id ? (
-                    <input
-                      type="number"
-                      value={modifyPrice}
-                      onChange={(e) => setModifyPrice(e.target.value)}
-                      className="w-[80%] px-4 py-2 border border-gray-300 rounded-md"
-                    />
-                  ) : (
-                    `${coffee.price}원`
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <button
-                    className="bg-blue-400 text-white text-sm px-2 py-1 rounded-md mb-2"
-                    onClick={() => {
-                      toggleEditing(coffee.id);
-                      setPrice(coffee.price.toString()); // 가격 상태 업데이트
-                    }}
-                  >
-                    {editingCoffee === coffee.id ? "Check" : "Edit"}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(coffee.id)}
-                    className="bg-red-400 text-white text-sm px-2 py-1 rounded-md"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
 
         {/* 세로 줄 */}
