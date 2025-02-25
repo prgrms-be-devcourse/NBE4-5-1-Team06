@@ -125,8 +125,8 @@ public class OrderService {
 		responseDto.setDeleted(true);
 
 		return responseDto;
-  }
-  
+	}
+
 	public void updatePendingOrdersToShipped() {
 		List<Order> pendingOrders = orderRepository.findByStatusFalse();
 
