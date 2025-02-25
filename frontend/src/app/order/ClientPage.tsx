@@ -274,7 +274,7 @@ export default function ClientPage() {
                 {calculateTotalPrice(order).toLocaleString()} ₩
               </div>
               <div className="flex flex-col m-4 justify-between items-center w-[10%]">
-                {order.status ? "배송 완료" : "배송 중"}
+                {order.status ? "출고 완료" : "출고 전"}
               </div>
               <div className="flex flex-col w-[5%]">
                 <button
