@@ -9,6 +9,7 @@ import org.hibernate.annotations.SoftDelete;
 import com.team6.cafe.domain.orderCoffee.entity.OrderCoffee;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,8 +20,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SoftDelete
@@ -41,6 +44,9 @@ public class Order {
 	private String address; // 주소
 
 	private int totalPrice; // 총 가격
+
+	@Column(insertable = false, updatable = false)
+	private boolean deleted;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderCoffee> orderCoffees; // 주문한 커피 목록

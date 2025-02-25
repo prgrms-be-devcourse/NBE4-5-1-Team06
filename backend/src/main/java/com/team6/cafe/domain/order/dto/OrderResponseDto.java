@@ -26,6 +26,7 @@ public class OrderResponseDto {
 	private String address;
 	private int totalPrice;
 	private List<OrderCoffeeResponseDto> orderCoffees;
+	private boolean deleted;
 
 	public static OrderResponseDto from(Order order, List<OrderCoffee> orderCoffees) {
 		List<OrderCoffeeResponseDto> orderCoffeeDtos = orderCoffees.stream()
@@ -40,7 +41,8 @@ public class OrderResponseDto {
 			order.isStatus(),
 			order.getAddress(),
 			order.getTotalPrice(),
-			orderCoffeeDtos
+			orderCoffeeDtos,
+			order.isDeleted()
 		);
 	}
 }

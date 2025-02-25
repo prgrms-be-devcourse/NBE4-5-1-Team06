@@ -115,6 +115,18 @@ public class OrderService {
 	}
 
 	@Transactional
+	public OrderResponseDto delete(Long id) {
+		Order order = orderRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+		orderRepository.delete(order);
+
+		OrderResponseDto responseDto = OrderResponseDto.from(order, order.getOrderCoffees());
+		responseDto.setDeleted(true);
+
+		return responseDto;
+	}
+
 	public void updatePendingOrdersToShipped() {
 		List<Order> pendingOrders = orderRepository.findByStatusFalse();
 
