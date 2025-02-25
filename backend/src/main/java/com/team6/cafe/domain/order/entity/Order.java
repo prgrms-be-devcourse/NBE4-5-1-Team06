@@ -73,4 +73,8 @@ public class Order {
 
 		modifyTime = LocalDateTime.now();
 	}
+
+	public void updateStatusToShipped() {
+		this.status = true;
+	}
 }
