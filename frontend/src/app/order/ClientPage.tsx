@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import Link from "next/link";
 import { useState } from "react";
 
 type CoffeeOrder = {
@@ -23,12 +24,14 @@ type Order = {
   orderCoffees: CoffeeOrder[];
 };
 
-axios.defaults.baseURL =
-  "https://e12668b6-de29-42fa-87ca-38a838a574c9.mock.pstmn.io";
+axios.defaults.baseURL = "http://localhost:8080";
 
 export default function ClientPage() {
   const [email, setEmail] = useState("");
   const [orders, setOrders] = useState<Order[]>([]);
+  const [modifiedCoffees, setModifiedCoffees] = useState<{
+    [orderId: number]: { [coffeeId: number]: number };
+  }>({});
 
   const getData = async () => {
     try {
@@ -38,54 +41,6 @@ export default function ClientPage() {
     } catch (error) {
       alert("해당 이메일의 주문은 존재하지 않습니다.");
     }
-  };
-
-  // 수량 증가
-  const handleIncrease = (orderId: number, coffeeId: number) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) => {
-        if (order.id === orderId) {
-          return {
-            ...order,
-            orderCoffees: order.orderCoffees.map((coffeeOrder) => {
-              if (coffeeOrder.id === coffeeId) {
-                const updatedQuantity = coffeeOrder.quantity + 1;
-                return {
-                  ...coffeeOrder,
-                  quantity: updatedQuantity,
-                };
-              }
-              return coffeeOrder;
-            }),
-          };
-        }
-        return order;
-      })
-    );
-  };
-
-  // 수량 감소
-  const handleDecrease = (orderId: number, coffeeId: number) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) => {
-        if (order.id === orderId) {
-          return {
-            ...order,
-            orderCoffees: order.orderCoffees.map((coffeeOrder) => {
-              if (coffeeOrder.id === coffeeId && coffeeOrder.quantity > 1) {
-                const updatedQuantity = coffeeOrder.quantity - 1;
-                return {
-                  ...coffeeOrder,
-                  quantity: updatedQuantity,
-                };
-              }
-              return coffeeOrder;
-            }),
-          };
-        }
-        return order;
-      })
-    );
   };
 
   // 각 주문의 수정 상태 관리
@@ -110,32 +65,113 @@ export default function ClientPage() {
     );
   };
 
-  // 서버에 PATCH 요청 보내기
+  // 수량 증가
+  const handleIncrease = (orderId: number, coffeeId: number) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === orderId
+          ? {
+              ...order,
+              orderCoffees: order.orderCoffees.map((coffeeOrder) =>
+                coffeeOrder.id === coffeeId
+                  ? { ...coffeeOrder, quantity: coffeeOrder.quantity + 1 }
+                  : coffeeOrder
+              ),
+            }
+          : order
+      )
+    );
+
+    // 변경된 커피 ID 및 수량 저장
+    setModifiedCoffees((prev) => ({
+      ...prev,
+      [orderId]: {
+        ...(prev[orderId] || {}),
+        [coffeeId]: (prev[orderId]?.[coffeeId] || 0) + 1, // 수량 증가
+      },
+    }));
+  };
+
+  // 수량 감소
+  const handleDecrease = (orderId: number, coffeeId: number) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === orderId
+          ? {
+              ...order,
+              orderCoffees: order.orderCoffees.map((coffeeOrder) =>
+                coffeeOrder.id === coffeeId && coffeeOrder.quantity > 1
+                  ? { ...coffeeOrder, quantity: coffeeOrder.quantity - 1 }
+                  : coffeeOrder
+              ),
+            }
+          : order
+      )
+    );
+
+    // 변경된 커피 ID 및 수량 저장
+    setModifiedCoffees((prev) => ({
+      ...prev,
+      [orderId]: {
+        ...(prev[orderId] || {}),
+        [coffeeId]: (prev[orderId]?.[coffeeId] || 0) - 1, // 수량 감소
+      },
+    }));
+  };
+
+  // 서버에 모든 변경된 커피 업데이트
   const updateOrder = async (orderId: number) => {
-    try {
-      const orderToUpdate = orders.find((order) => order.id === orderId);
-      if (!orderToUpdate) return;
+    if (window.confirm("정말 커피를 수정하시겠습니까?")) {
+      try {
+        const orderToUpdate = orders.find((order) => order.id === orderId);
+        if (!orderToUpdate) return;
 
-      const updatedOrderData = {
-        ...orderToUpdate,
-        totalPrice: calculateTotalPrice(orderToUpdate), // 총 가격 다시 계산
-      };
+        const modifiedCoffeeData = modifiedCoffees[orderId] || {};
 
-      // 서버에 PATCH 요청
-      const response = await axios.patch(
-        `/api/order/${orderId}`,
-        updatedOrderData
-      );
-      console.log("Updated order:", response.data);
+        // 변경된 커피 리스트 생성
+        const updatedCoffees = orderToUpdate.orderCoffees
+          .filter(
+            (coffeeOrder) => modifiedCoffeeData[coffeeOrder.id] !== undefined
+          )
+          .map((coffeeOrder) => ({
+            coffeeId: coffeeOrder.coffee.id,
+            quantity: coffeeOrder.quantity,
+          }));
 
-      // 상태 업데이트
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.id === orderId ? { ...order, ...updatedOrderData } : order
-        )
-      );
-    } catch (error) {
-      alert("수정 실패");
+        if (updatedCoffees.length === 0) {
+          alert("변경된 내용이 없습니다.");
+          return;
+        }
+
+        const updatedOrderData = {
+          email: orderToUpdate.email,
+          coffees: updatedCoffees,
+        };
+
+        const response = await axios.patch(
+          `/api/order/${orderId}`,
+          updatedOrderData
+        );
+        console.log("Updated order:", response.data);
+
+        // 상태 업데이트
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.id === orderId ? { ...order, ...response.data } : order
+          )
+        );
+
+        // 수정 완료 후 해당 주문의 변경 내역 초기화
+        setModifiedCoffees((prev) => {
+          const updated = { ...prev };
+          delete updated[orderId];
+          return updated;
+        });
+
+        alert("수정이 완료되었습니다.");
+      } catch (error) {
+        alert("수정 실패");
+      }
     }
   };
 
@@ -153,7 +189,9 @@ export default function ClientPage() {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-      <div className="text-4xl font-bold">Grids & Circles</div>
+      <Link href={"/"}>
+        <div className="text-4xl font-bold">Grids & Circles</div>
+      </Link>
       <div className="container flex flex-col px-8 py-5 text-xl font-bold mt-10 overflow-y-auto">
         <div className="flex flex-row justify-center items-center">
           email : &nbsp;
@@ -170,6 +208,17 @@ export default function ClientPage() {
             Search
           </button>
         </div>
+        <br />
+
+        {/* 테이블 헤더 */}
+        <div className="border-b-2 border-gray-500 py-2 px-4 flex justify-between font-bold bg-gray-200">
+          <div className="w-[5%] text-center">ID</div>
+          <div className="w-[20%] text-center">Address</div>
+          <div className="w-[40%] text-center">Coffees</div>
+          <div className="w-[10%] text-center">Total Price</div>
+          <div className="w-[10%] text-center">Status</div>
+          <div className="w-[5%] text-center">Actions</div>
+        </div>
 
         {/* 주문 목록 렌더링 */}
         <ul className="flex flex-col mt-5">
@@ -178,22 +227,22 @@ export default function ClientPage() {
               key={order.id}
               className="border-2 border-gray-500 my-2 p-2 flex flex-row justify-between items-center"
             >
-              <div>{order.id}</div>
-              <div className="flex flex-col m-4 justify-between items-center">
+              <div className="w-[5%]">{order.id}</div>
+              <div className="flex flex-col m-4 justify-between items-center w-[20%]">
                 <div>{order.address}</div>
                 <div>{new Date(order.orderTime).toLocaleString()}</div>
               </div>
-              <ul className="ml-4">
+              <ul className="ml-4 w-[40%]">
                 {order.orderCoffees.map((coffeeOrder) => (
                   <li
                     key={coffeeOrder.id}
                     className="border p-2 my-1 flex flex-row justify-between items-center"
                   >
                     <div className="flex flex-col justify-between mr-5">
-                      <div>☕ {coffeeOrder.coffee.name}</div>
-                      <div>
-                        💵 Price: {coffeeOrder.coffee.price.toLocaleString()} 원
-                      </div>
+                      <div>{coffeeOrder.coffee.name}</div>
+                      <span className="text-gray-600">
+                        {coffeeOrder.coffee.price.toLocaleString()} ₩
+                      </span>
                     </div>
                     {editingOrder === order.id ? (
                       <div className="flex flex-row items-center">
@@ -221,11 +270,13 @@ export default function ClientPage() {
                   </li>
                 ))}
               </ul>
-              <div>
-                💰 Total Price: {calculateTotalPrice(order).toLocaleString()} 원
+              <div className="flex flex-col m-4 justify-between items-center w-[10%]">
+                {calculateTotalPrice(order).toLocaleString()} ₩
               </div>
-              <div>🚀 Status: {order.status ? "Completed" : "Pending"}</div>
-              <div className="flex flex-col">
+              <div className="flex flex-col m-4 justify-between items-center w-[10%]">
+                {order.status ? "배송 완료" : "배송 중"}
+              </div>
+              <div className="flex flex-col w-[5%]">
                 <button
                   className="bg-blue-400 text-white px-2 py-1 rounded-md mb-2"
                   onClick={() => toggleEditing(order.id)}
