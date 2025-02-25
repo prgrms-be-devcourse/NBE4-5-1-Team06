@@ -243,7 +243,7 @@ export default function ClientPage() {
           </div>
 
           {/* 주문 조회 버튼 */}
-          <div className="mt-10">
+          <div className="mt-5">
             <button
               onClick={handleButtonClick}
               type="button"
@@ -254,7 +254,7 @@ export default function ClientPage() {
           </div>
 
           {/* 메뉴 관리 버튼 */}
-          <div className="mt-10">
+          <div className="mt-5">
             <button
               onClick={handleButtonClick2}
               type="button"
