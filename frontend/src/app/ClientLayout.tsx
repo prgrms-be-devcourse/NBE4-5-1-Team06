@@ -24,9 +24,13 @@ export default function ClientPage() {
     { id: number; quantity: number }[]
   >([]);
 
+  const api = axios.create({
+    baseURL: "http://localhost:8080/api",
+  });
+
   // 커피 목록을 가져오는 useEffect
   useEffect(() => {
-    axios
+    api
       .get("/coffee")
       .then((response) => {
         setCoffees(response.data);
@@ -44,6 +48,10 @@ export default function ClientPage() {
   // 주문 페이지로 이동
   const handleButtonClick = () => {
     router.push("/order");
+  };
+
+  const handleButtonClick2 = () => {
+    router.push("/coffee");
   };
 
   // 커피 수량 변경 처리
@@ -242,6 +250,17 @@ export default function ClientPage() {
               className="w-full py-4 bg-custom-gray rounded-md hover:bg-custom-red-600"
             >
               주문 조회 바로가기
+            </button>
+          </div>
+
+          {/* 메뉴 관리 버튼 */}
+          <div className="mt-10">
+            <button
+              onClick={handleButtonClick2}
+              type="button"
+              className="w-full py-4 bg-custom-gray rounded-md hover:bg-custom-red-600"
+            >
+              메뉴 관리
             </button>
           </div>
         </div>
