@@ -125,5 +125,16 @@ public class OrderService {
 		responseDto.setDeleted(true);
 
 		return responseDto;
+
+	public void updatePendingOrdersToShipped() {
+		List<Order> pendingOrders = orderRepository.findByStatusFalse();
+
+		for (Order order : pendingOrders) {
+			order.updateStatusToShipped();  // 상태 변경
+		}
+	}
+
+	public Long count() {
+		return orderCoffeeRepository.count();
 	}
 }
