@@ -127,7 +127,6 @@ public class OrderService {
 		return responseDto;
 	}
 
-	@Transactional
 	public void updatePendingOrdersToShipped() {
 		List<Order> pendingOrders = orderRepository.findByStatusFalse();
 
